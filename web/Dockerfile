@@ -1,5 +1,6 @@
 # start with a base image
 FROM ubuntu:14.10
+MAINTAINER christiprez (christelleangus@yahoo.fr)
 
 # install dependencies
 RUN apt-get -y update
