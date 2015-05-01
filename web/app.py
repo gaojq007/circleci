@@ -10,7 +10,7 @@ redis = Redis(host="redis_1", port=6379)
 @app.route('/')
 def hello():
     redis.incr('views')
-    return 'Hello! This page has been seen {0} times.'.format(
+    return 'Bonjour! Cette page a été vue {0} fois.'.format(
         redis.get('views'))
 
 
