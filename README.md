@@ -6,7 +6,7 @@ DOCKER IN ACTION : Integration Continue avec CircleCI
 Nous allons installé notre environnement local, en buildant une image à partir d'un Dockerfile puis créer une instance de l'image à partir du conteneur . Nous attacherons le tout avec Docker Compose pour builder et connecter différents conteneurs à la fois pour l'application et le processus Flask Redis .
 
 PREREQUIS
-
+=========
 DOCKER HUB
 Prérequis : 
 	- avoir un compte sur docker hub (https://registry.hub.docker.com/u/<user>)
@@ -14,69 +14,35 @@ Prérequis :
 
 CONNECTION à DOCKER HUB
 Connection à Docker Hub, par ligne de commande :
-user@server1:~$ sudo docker login
+$ sudo docker login
 Importer notre image du docker hub
-	docker pull <user>/ci-project
+$ docker pull <user>/ci-project
 
 Installation d'une VM ubuntu 14.04 sur virtualbox
 Configurer ssh puis activer
-	$ sudo apt-get install ssh
+$ sudo apt-get install ssh
 $ sudo service ssh start
 Mettre à jour les paquets
 $ sudo apt-get update
 Installer Docker (version la plus récente)
-	$ wget -qO- https://get.docker.com/ | sh
+$ wget -qO- https://get.docker.com/ | sh
 Vérifier que Docker est bien installé
-	$ sudo docker run hello-world
-	$ docker images
+$ sudo docker run hello-world
+$ docker images
 Ajouter un group "docker" et y ajouter votre user
-	$ sudo usermod -aG docker <user>
+$ sudo usermod -aG docker <user>
 Rebooter puis vérifier que vous pouvez utiliser Docker sans "sudo"
-	$ docker run hello-world
+$ docker run hello-world
 Récupérer les fichiers du projet
-git clone https://github.com/realpython/fitter-happier-docker.git
+$ git clone https://github.com/realpython/fitter-happier-docker.git
 Renommer le répertoire 
-	mv fitter-happier-docker ci-project
-	cd ci-project
+$ mv fitter-happier-docker ci-project
+$ cd ci-project
 
 DOCKER
 ======
 DOCKERFILE
-
-Le répertoire où sera le Dockerfile a été ajouté :
-	/home/user/ci-project/web
-#  Dockerfile :
-	$ nano /home/user/ci-project/web/Dockerfile
-# start with a base image
-FROM ubuntu:14.10
-
-# install dependencies
-RUN apt-get -y update
-RUN apt-get install -y python python-dev python-pip python-psycopg2
-RUN apt-get install -y nginx supervisor
-
-# add requirements.txt and install
-ADD requirements.txt /code/requirements.txt
-RUN pip install -r /code/requirements.txt
-
-# set working diretory
-WORKDIR /code 
-# fichier "requirements.txt"
-		docker-py==0.5.3
-docopt==0.6.2
-Flask==0.10.1
-Flask-Testing==0.4.2
-itsdangerous==0.24
-Jinja2==2.7.3
-MarkupSafe==0.23
-nose==1.3.4
-PyYAML==3.11
-redis==2.10.3
-requests==2.2.1
-six==1.9.0
-texttable==0.8.2
-websocket-client==0.11.0
-Werkzeug==0.10.1
+Le répertoire où sera le Dockerfile a été ajouté : /home/user/ci-project/web
 
 DOCKER COMPOSE
 L’objectif de “docker-compose” est de permettre d’exécuter et de mettre en relation les différentes images dont notre application a besoin en une seule commande. Un fichier docker-compose.yml doit être créé. Chaque container doit y être décrit : image, commande de lancement, volumes, ports…
@@ -85,8 +51,8 @@ Installer Docker Compose
 $ curl -L https://github.com/docker/compose/releases/download/1.2.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 $ chmod +x /usr/local/bin/docker-compose
 Tester l'installation de Compose
-	$ docker-compose --version
-	$ sudo nano docker-compose.yml
+$ docker-compose --version
+$ sudo nano docker-compose.yml
  web:
     build: web
     volumes:
@@ -117,25 +83,23 @@ $ sudo sh -c "echo deb http://get.docker.io/ubuntu docker main > /etc/apt/source
 $ sudo apt-get update
 $ sudo apt-get install lxc-docker  
 
-# récupérer l'adresse IP docker : ifconfig/docker0
+Récupérer l'adresse IP docker : ifconfig/docker0
 IP docker : 172.17.42.1
  
-
 Pour se connecter à partir du navigateur de la machine hôte, dans virtualbox, pour notre VM, faire une redirection de port : 5000 à 80.==>  http://localhost:5000/
- 
-	$ docker ps
-	$ docker-compose ps
+$ docker ps
+$ docker-compose ps
 
 Arrêter docker compose
-	$ docker-compose stop
+$ docker-compose stop
 Créer une image
-	$ cd /web	# aller dans le répertoire qui contient le Dockerfile (/home/user/ci-project/web)
-	$ docker build -t="<user>/ci-project" .
+$ cd /web	# aller dans le répertoire qui contient le Dockerfile (/home/user/ci-project/web)
+$ docker build -t="<user>/ci-project" .
 Vérifier que l'image a été buildée 
-	$ docker images
+$ docker images
  
 Déposer l'image dans docker hub
-	$ docker push <user>/ci-project
+$ docker push <user>/ci-project
 
 Nous avons installer notre environnement local, en détaillant le processus de base de la construction d' une image d'un Dockerfile puis créer une instance de l'image (un conteneur) . Nous avons attaché le tout avec Docker Compose pour builder et connecter différents conteneurs à la fois pour l'application et le processus Flask Redis. Maintenant nous allons mettre en oeuvre l'intégration continue avec CircleCI.
 
@@ -144,7 +108,6 @@ TUTO GIT
 http://git-scm.com/book/fr/v1/D%C3%A9marrage-rapide-Installation-de-Git
 
 1°) Installer git sur son serveur ubuntu
-
 $ apt-get update
 $ apt-get install libcurl4-gnutls-dev libexpat1-dev gettext libz-dev libssl-dev
 $ apt-get install git
@@ -153,16 +116,15 @@ $ tar -zxf git-2.3.6.tar.gz
 $ cd git-2.3.6
 $ make prefix=/usr/local all
 $ sudo make prefix=/usr/local install
-# Nom d’utilisateur : dire à git votre nom, pour qu'il étiquette les commits 
+Nom d’utilisateur : dire à git votre nom, pour qu'il étiquette les commits 
 $ git config --global user.name "<user>"
-# E-mail : Git sauvegarde l'adresse e-mail à l’intérieur des commits produits. 
-# L’adresse e-mail est utilisée pour associer les commits au compte GitHub.
+E-mail : Git sauvegarde l'adresse e-mail à l’intérieur des commits produits. 
+L’adresse e-mail est utilisée pour associer les commits au compte GitHub.
 $ git config --global user.email "<user>@yahoo.fr"
-# Vérifier les paramètres saisis
+Vérifier les paramètres saisis
 $ git config --list
 
 2°) Démarrer un dépôt Git
-
 Vous pouvez principalement démarrer un dépôt Git de deux manières. La première consiste à prendre un projet ou un répertoire existant et à l'importer dans Git. La seconde consiste à cloner un dépôt Git existant sur un autre serveur.
 Initialisation d'un dépôt Git dans un répertoire existant
 Si vous commencez à suivre un projet existant dans Git, vous n'avez qu'à vous positionner dans le répertoire du projet et saisir :
@@ -190,13 +152,13 @@ Créer un nouveau dépôt ou repository :
 •	Maintenant que le dépôt est créé, vous pouvez le cloner en local, sur votre ordinateur. Lancez le programme GitHub que vous venez d’installer. Vous allez ajouter les informations GITHUB pour que le programme puisse accéder à votre compte. 
  
 
-git add <fichier>
-git add <dossier>
-git status
-git commit
-git commit -m "message"
-git remote add origin https://github.com/<user>/ ci-project.git
-git push
+$ git add <fichier>
+$ git add <dossier>
+$ git status
+$ git commit
+$ git commit -m "message"
+$ git remote add origin https://github.com/<user>/ ci-project.git
+$ git push
 
 
 
